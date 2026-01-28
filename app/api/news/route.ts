@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { prisma } from '@/lib/prisma';
 
 interface NewsItem {
   title: string;
@@ -57,7 +58,39 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    return NextResponse.json({ news: newsItems });
+    // 데이터베이스에 저장
+    try {
+      const search = await prisma.search.create({
+        data: {
+          keyword,
+          newsItems: {
+            create: newsItems.map((item) => ({
+              title: item.title,
+              link: item.link,
+              snippet: item.snippet,
+              source: item.source,
+              date: item.date || null,
+            })),
+          },
+        },
+        include: {
+          newsItems: true,
+        },
+      });
+
+      return NextResponse.json({ 
+        news: newsItems,
+        searchId: search.id,
+        savedAt: search.createdAt
+      });
+    } catch (dbError: any) {
+      // DB 저장 실패해도 뉴스는 반환
+      console.error('DB 저장 오류:', dbError);
+      return NextResponse.json({ 
+        news: newsItems,
+        warning: '뉴스는 검색되었지만 데이터베이스 저장에 실패했습니다.'
+      });
+    }
   } catch (error: any) {
     console.error('뉴스 검색 오류:', error);
     return NextResponse.json(

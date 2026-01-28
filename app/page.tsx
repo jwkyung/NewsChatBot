@@ -16,6 +16,13 @@ interface Message {
   content: string;
 }
 
+interface SearchHistory {
+  id: string;
+  keyword: string;
+  createdAt: string;
+  newsItems: NewsItem[];
+}
+
 export default function Home() {
   const [keyword, setKeyword] = useState('');
   const [news, setNews] = useState<NewsItem[]>([]);
@@ -24,6 +31,9 @@ export default function Home() {
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<SearchHistory[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const searchNews = async () => {
     if (!keyword.trim()) {
@@ -142,6 +152,46 @@ export default function Home() {
     }
   };
 
+  const loadSearchHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const response = await fetch('/api/searches?limit=10');
+      const data = await response.json();
+
+      if (response.ok) {
+        setSearchHistory(data.searches || []);
+        setShowHistory(true);
+      }
+    } catch (error: any) {
+      console.error('검색 기록 로드 오류:', error);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const loadSearchFromHistory = async (searchId: string) => {
+    try {
+      const response = await fetch(`/api/searches/${searchId}`);
+      const data = await response.json();
+
+      if (response.ok && data.search) {
+        const search = data.search;
+        setKeyword(search.keyword);
+        setNews(search.newsItems);
+        setSummary('');
+        setMessages([]);
+        setShowHistory(false);
+        
+        // 요약 생성
+        if (search.newsItems && search.newsItems.length > 0) {
+          generateSummary(search.newsItems);
+        }
+      }
+    } catch (error: any) {
+      alert('검색 기록을 불러오는 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <main className={styles.main}>
       <div className={styles.container}>
@@ -169,8 +219,46 @@ export default function Home() {
             >
               {loading ? '검색 중...' : '검색'}
             </button>
+            <button
+              onClick={loadSearchHistory}
+              disabled={historyLoading}
+              className={styles.historyButton}
+            >
+              {historyLoading ? '로딩...' : '검색 기록'}
+            </button>
           </div>
         </div>
+
+        {showHistory && searchHistory.length > 0 && (
+          <div className={styles.historySection}>
+            <div className={styles.historyHeader}>
+              <h2 className={styles.sectionTitle}>검색 기록</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className={styles.closeButton}
+              >
+                닫기
+              </button>
+            </div>
+            <div className={styles.historyList}>
+              {searchHistory.map((search) => (
+                <div
+                  key={search.id}
+                  className={styles.historyItem}
+                  onClick={() => loadSearchFromHistory(search.id)}
+                >
+                  <div className={styles.historyKeyword}>{search.keyword}</div>
+                  <div className={styles.historyMeta}>
+                    <span>{search.newsItems.length}개 뉴스</span>
+                    <span>
+                      {new Date(search.createdAt).toLocaleString('ko-KR')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {news.length > 0 && (
           <div className={styles.contentGrid}>

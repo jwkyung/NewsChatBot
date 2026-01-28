@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+// 검색 기록
+model Search {
+  id        String   @id @default(cuid())
+  keyword   String
+  createdAt DateTime @default(now())
+  newsItems NewsItem[]
+}
+
+// 뉴스 아이템
+model NewsItem {
+  id        String   @id @default(cuid())
+  searchId  String
+  search    Search   @relation(fields: [searchId], references: [id], onDelete: Cascade)
+  title     String
+  link      String   @unique
+  snippet   String
+  source    String
+  date      String?
+  createdAt DateTime @default(now())
+  
+  @@index([searchId])
+  @@index([link])
+}

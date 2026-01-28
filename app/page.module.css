@@ -43,6 +43,7 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .searchInput {
@@ -79,6 +80,93 @@
 .searchButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.historyButton {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #667eea;
+  background: white;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.historyButton:hover:not(:disabled) {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+.historyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.historySection {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.closeButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #666;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: #e0e0e0;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.historyItem {
+  padding: 1rem;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.historyItem:hover {
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+  transform: translateY(-2px);
+}
+
+.historyKeyword {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.historyMeta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #999;
 }
 
 .contentGrid {
