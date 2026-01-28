@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+// 동적 라우트로 명시 (정적 생성 방지)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // 검색 기록 목록 조회
 export async function GET(request: NextRequest) {
   try {

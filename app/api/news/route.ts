@@ -3,6 +3,10 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { prisma } from '@/lib/prisma';
 
+// 동적 라우트로 명시 (정적 생성 방지)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 interface NewsItem {
   title: string;
   link: string;
