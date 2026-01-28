@@ -78,6 +78,7 @@ export async function GET(request: NextRequest) {
         },
       });
 
+      console.log('검색 기록 저장 성공:', search.id);
       return NextResponse.json({ 
         news: newsItems,
         searchId: search.id,
@@ -86,9 +87,15 @@ export async function GET(request: NextRequest) {
     } catch (dbError: any) {
       // DB 저장 실패해도 뉴스는 반환
       console.error('DB 저장 오류:', dbError);
+      console.error('DB 오류 상세:', {
+        message: dbError.message,
+        code: dbError.code,
+        meta: dbError.meta
+      });
       return NextResponse.json({ 
         news: newsItems,
-        warning: '뉴스는 검색되었지만 데이터베이스 저장에 실패했습니다.'
+        warning: '뉴스는 검색되었지만 데이터베이스 저장에 실패했습니다.',
+        dbError: process.env.NODE_ENV === 'development' ? dbError.message : undefined
       });
     }
   } catch (error: any) {

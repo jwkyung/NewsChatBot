@@ -169,6 +169,22 @@
   color: #999;
 }
 
+.emptyHistory {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+}
+
+.emptyHistory p {
+  margin: 0.5rem 0;
+}
+
+.emptyHistoryHint {
+  font-size: 0.875rem;
+  color: #999;
+  font-style: italic;
+}
+
 .contentGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;

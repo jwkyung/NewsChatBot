@@ -161,9 +161,19 @@ export default function Home() {
       if (response.ok) {
         setSearchHistory(data.searches || []);
         setShowHistory(true);
+        
+        // 검색 기록이 없을 때 안내
+        if (!data.searches || data.searches.length === 0) {
+          alert('저장된 검색 기록이 없습니다. 뉴스를 검색하면 자동으로 저장됩니다.');
+        }
+      } else {
+        // API 오류 시 사용자에게 알림
+        console.error('검색 기록 조회 오류:', data.error || data.details);
+        alert(data.error || '검색 기록을 불러오는 중 오류가 발생했습니다.');
       }
     } catch (error: any) {
       console.error('검색 기록 로드 오류:', error);
+      alert('검색 기록을 불러오는 중 오류가 발생했습니다. 브라우저 콘솔을 확인해주세요.');
     } finally {
       setHistoryLoading(false);
     }
@@ -229,7 +239,7 @@ export default function Home() {
           </div>
         </div>
 
-        {showHistory && searchHistory.length > 0 && (
+        {showHistory && (
           <div className={styles.historySection}>
             <div className={styles.historyHeader}>
               <h2 className={styles.sectionTitle}>검색 기록</h2>
@@ -240,23 +250,32 @@ export default function Home() {
                 닫기
               </button>
             </div>
-            <div className={styles.historyList}>
-              {searchHistory.map((search) => (
-                <div
-                  key={search.id}
-                  className={styles.historyItem}
-                  onClick={() => loadSearchFromHistory(search.id)}
-                >
-                  <div className={styles.historyKeyword}>{search.keyword}</div>
-                  <div className={styles.historyMeta}>
-                    <span>{search.newsItems.length}개 뉴스</span>
-                    <span>
-                      {new Date(search.createdAt).toLocaleString('ko-KR')}
-                    </span>
+            {searchHistory.length > 0 ? (
+              <div className={styles.historyList}>
+                {searchHistory.map((search) => (
+                  <div
+                    key={search.id}
+                    className={styles.historyItem}
+                    onClick={() => loadSearchFromHistory(search.id)}
+                  >
+                    <div className={styles.historyKeyword}>{search.keyword}</div>
+                    <div className={styles.historyMeta}>
+                      <span>{search.newsItems.length}개 뉴스</span>
+                      <span>
+                        {new Date(search.createdAt).toLocaleString('ko-KR')}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyHistory}>
+                <p>저장된 검색 기록이 없습니다.</p>
+                <p className={styles.emptyHistoryHint}>
+                  뉴스를 검색하면 자동으로 저장됩니다.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
